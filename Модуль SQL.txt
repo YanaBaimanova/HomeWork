@@ -1,0 +1,34 @@
+№ 1. Вывести отсортированный по количеству перелетов (по убыванию) и имени (по возрастанию) список пассажиров, 
+совершивших хотя бы 1 полет.
+
+WITH count as (
+    SELECT Passenger.name as name, Count(Pass_in_trip.id) as count FROM Passenger, Pass_in_trip
+    WHERE Passenger.id = Pass_in_trip.passenger
+    GROUP BY Passenger.name 
+) 
+SELECT * FROM count
+UNION 
+SELECT name, count FROM count 
+ORDER BY count DESC, name ASC
+________________________________________________________
+№ 2. Сколько времени обучающийся будет находиться в школе, учась со 2-го по 4-ый уч. предмет ?
+
+SELECT timediff((SELECT end_pair FROM Timepair WHERE id = 4),(SELECT start_pair FROM Timepair WHERE id =2)) AS time
+_______________________________________________________
+№ 3. Выведите список комнат, которые были зарезервированы в течение 12 недели 2020 года.
+
+SELECT Rooms.* FROM Rooms
+JOIN Reservations on Rooms.id = Reservations.room_id 
+where WEEK(Reservations.start_date,1) = 12 and YEAR(Reservations.end_date) = 2020
+______________________________________________________
+№ 4. Какой(ие) кабинет(ы) пользуются самым большим спросом?
+
+SELECT classroom 
+FROM Schedule
+GROUP BY classroom
+HAVING COUNT(classroom) = 
+    (SELECT COUNT(classroom) 
+     FROM Schedule 
+     GROUP BY classroom
+     ORDER BY COUNT(classroom) DESC 
+     LIMIT 1)
